@@ -5,7 +5,7 @@
 # MODIFIED: 
 #
 # USAGE:
-# 	make [all] - makes the stm32f0xx libraries if not cached and compiler files in src and inc dirs 
+# 	make [all] - makes the stm32f0xx libraries if not cached and compiler files in src/inc dirs 
 #	make remake - rebuilds .elf using src and inc files explicitly by removing and rebuilding
 #	make clean - removes the .elf and associated linker and object files
 #	make reallyclean - in addition to running make clean also removed the cached libraries
@@ -108,9 +108,13 @@ LIB_OBJS = $(addprefix $(STD_PERIPH_LIB)/obj/, $(LIB_SRCS:.c=.o))
 
 # MAKE RULES
 
-.PHONY: proj
+.PHONY: lint proj
 
-all: $(STD_PERIPH_LIB)/libstm32f0.a proj
+all: lint $(STD_PERIPH_LIB)/libstm32f0.a proj
+
+lint:
+	-find inc -name "*.c" -o -name "*.h" | xargs -r cpplint --extensions=c,h
+	-find src -name "*.c" -o -name "*.h" | xargs -r cpplint --extensions=c,h
 
 # compiles library objects
 $(STD_PERIPH_LIB)/obj/%.o : $(STD_PERIPH_LIB)/STM32F0xx_StdPeriph_Driver/src/%.c
